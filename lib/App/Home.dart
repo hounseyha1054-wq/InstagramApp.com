@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'DetailStory.dart';
+
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
@@ -319,18 +321,46 @@ class HomePage extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             itemCount: stories.length + 1,
             itemBuilder: (context, sIndex) {
+              // 1. Handle "Your Story" (index 0)
               if (sIndex == 0) {
-                return _storyItem(
-                  image:
-                      'https://scontent.fpnh8-1.fna.fbcdn.net/v/t39.30808-6/481267582_1169811428149026_6125290746168601830_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeHR7fjJcpKetEdwHhHNYoxmA4VtK5YuRyYDhW0rli5HJho3qAwxIoCZxob9_yudegZ-msPfcFV0GdZ4ZzW2wX4W&_nc_ohc=t7cc7y4XqGIQ7kNvwHmLzdv&_nc_oc=AdnaRmlMJw__g9GpAMBji1zznsTNnibG9OsHTXy9myL9tfZq8J_aoeLnDa1exF5KLRM&_nc_zt=23&_nc_ht=scontent.fpnh8-1.fna&_nc_gid=Xg-r_1uKYH-hhnlxzgXfdg&oh=00_AfsKvtbk_hKY1Puo4wRvZE4L47d_SL4YVu4BqF-eBFa2NQ&oe=6990CBC8',
-                  name: 'Your story',
-                  isYourStory: true,
+                final myProfileImage =
+                    'https://scontent.fpnh8-1.fna.fbcdn.net/v/...'; // Your URL
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Detailstory(
+                          imageUrl: myProfileImage,
+                          name: 'Your story',
+                        ),
+                      ),
+                    );
+                  },
+                  child: _storyItem(
+                    image: myProfileImage,
+                    name: 'Your story',
+                    isYourStory: true,
+                  ),
                 );
               }
+
+              // 2. Handle other stories
               final story = stories[sIndex - 1];
-              return _storyItem(
-                image: story['profile_url']!,
-                name: story['username']!,
+              final String imageUrl = story['profile_url']!;
+              final String username = story['username']!;
+
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          Detailstory(imageUrl: imageUrl, name: username),
+                    ),
+                  );
+                },
+                child: _storyItem(image: imageUrl, name: username),
               );
             },
           ),
@@ -344,7 +374,7 @@ class HomePage extends StatelessWidget {
     required String image,
     required String name,
     bool isYourStory = false,
-    bool hasUpdate = true, // Added to control the border
+    bool hasUpdate = true,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -353,7 +383,7 @@ class HomePage extends StatelessWidget {
           Stack(
             children: [
               Container(
-                padding: const EdgeInsets.all(3), // Space for the border
+                padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: hasUpdate && !isYourStory
